@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Login</h3>
+                    <div class="box-tools pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <hr />
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                    <label class="control-label" for="txtUseName">User Name</label>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                                    <input type="text" id="txtUserName" class="form-control required" maxlength="50" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <div class="form-group row">
+                                <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+                                    <label class="control-label" for="txtPassword">Password</label>
+                                </div>
+                                <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
+                                    <input type="password" id="txtPassword" class="form-control required" maxlength="20" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                            <ul class="sub-header">
+                                <li class="text-center">
+                                    <button class="btn btn-save btn-primary" onclick="FN_Login()">Login</button>
+                                    <button class="btn btn-clear btn-info" onclick="FN_Clear()">CLEAR</button>
+                                    <button class="btn btn-clear btn-info" onclick="FN_SignUp()">SIGN UP</button>
+                                </li>
+                                <li class="text-center">
+                                    <label id="lblSaveMsg" class="text-danger"></label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    history.pushState(null, null, location.href);
+    window.onpopstate = function () {
+        history.go(1);
+    };
+
+    new WOW().init();
+
+    function FN_SignUp() {
+        window.location.href = '@Url.Action("SignUp", "Home")';
+    }
+
+    function FN_Login() {
+
+        var isvalid = true;
+        isvalid = FormValidation();
+        if (isvalid == false) {
+            return;
+        }
+
+        var _obj = {};
+        _obj = {
+            "User_Name": $("#txtUserName").val(),
+            "Password": $("#txtPassword").val(),
+        };
+        $("#btnSave").attr("disabled", "disabled");
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("User_Login", "Home")',
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({ _model: _obj }),
+            dataType: "json",
+            success: function (response) {
+                $("#btnSave").removeAttr("disabled", "disabled");
+                if (response.ReturnValue > 0) {
+                    $("#lblSaveMsg").text(response.RetuenMsg);
+                    $("#lblSaveMsg").removeClass("text-danger");
+                    $("#lblSaveMsg").addClass("text-success");
+                    setTimeout(function () {
+                        window.location.href = '@Url.Action("Index", "Stock")';
+                    }, 2000);
+                } else {
+                    $("#lblSaveMsg").text(response.RetuenMsg);
+                    $("#lblSaveMsg").removeClass("text-success");
+                    $("#lblSaveMsg").addClass("text-danger");
+                }
+            }
+        });
+    }
+</script>
+
